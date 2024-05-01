@@ -17,9 +17,9 @@ Users can complete their purchases by confirming their orders.
 
 # Technologies Used:
 
-Programming Language: Java
-Database: MySQL
-Additional Libraries/Tools: JDBC for database connectivity
+1. Programming Language: Java
+2. Database: MySQL
+3. Additional Libraries/Tools: JDBC for database connectivity
 
 # How to Run the Application:
 
@@ -32,4 +32,4 @@ Additional Libraries/Tools: JDBC for database connectivity
 7. Ensure that the MySQL database is running and accessible to store and retrieve data during application runtime.
 
 # Conclusion: 
-By leveraging Java programming language and MySQL database, this E-Commerce application offers a platform for users to shop conveniently and securely. The console-based interface ensures accessibility across different systems, providing a hassle-free shopping experience for users. With its features and functionality, the application aims to cater to the diverse needs of online shoppers while promoting user satisfaction and engagement.
+By leveraging Java programming language and MySQL database, this E-Commerce application offers a platform for users to shop conveniently. The console-based interface ensures accessibility across different systems, providing a hassle-free shopping experience for users. With its features and functionality, the application aims to cater to the diverse needs of online shoppers while promoting user satisfaction and engagement.
