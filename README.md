@@ -8,10 +8,10 @@ Welcome to the Project Repository! This repository contains multiple projects ta
 ### [Project Details link](https://github.com/monmarupeddi/Projects/tree/main/World%20Happiness%20Report%20Analysis%20and%20Visualization)
 ## 3. Enhanced Document Retreival System Using ML
 **Description:** The goal of this project is to improve search result relevance in document retrieval systems by developing and implementing a sophisticated ranking model based on supervised machine learning techniques, leveraging Natural Language Processing (NLP) and regression algorithms.
-### [Project Details link](https://github.com/monmarupeddi/Projects/tree/main/World%20Happiness%20Report%20Analysis%20and%20Visualization)
+### [Project Details link](https://github.com/monmarupeddi/Projects/tree/main/Yelp%20Reviews%20Rating%20Prediction)
 ## 4. End-to-End Console based E-Commerce Shopping System
 **Description:** This Java-based E-Commerce application offers a shopping experience with authentication, user management, a product catalog, and a functional shopping cart. Leveraging MySQL for data storage and JDBC for connectivity, users can securely browse, select, and purchase items.
-### [Project Details link](https://github.com/monmarupeddi/Projects/tree/main/Yelp%20Reviews%20Rating%20Prediction)
+### [Project Details link](https://github.com/monmarupeddi/Projects/tree/main/E-Commerce%20Shopping%20Application)
 
 
 
