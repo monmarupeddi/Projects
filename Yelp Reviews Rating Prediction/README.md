@@ -1,4 +1,4 @@
-# Yelp Review Star Rating Prediction
+# Enhanced Document Retreival System Using ML
 
 # Project Goal:
 The goal of this project is to improve search result relevance in document retrieval systems by developing and implementing a sophisticated ranking model based on supervised machine learning techniques. Leveraging Natural Language Processing (NLP) and regression algorithms and by employing techniques such as text processing, tokenization, and feature engineering, the model enhances the accuracy of document retrieval, ultimately leading to more relevant search results for users. 
