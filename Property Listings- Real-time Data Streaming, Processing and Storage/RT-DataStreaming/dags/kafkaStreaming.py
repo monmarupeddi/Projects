@@ -2,7 +2,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-
+# format the response data
 def formatData(response):
     data = {}
     data['bed'] = response["bathrooms"]
@@ -27,14 +27,13 @@ def formatData(response):
     data['lat'] = response["latitude"]
     data['long'] = response["longitude"]
     data['image'] = response["imgSrc"]
-    print(data)
+    #print(data)
     return data
 
 
-# stream the data
+# connect to API
 def inputData():
     import json
-    import requests
     import requests
 
     url = "https://zillow56.p.rapidapi.com/search"
@@ -47,33 +46,42 @@ def inputData():
     }
 
     response = requests.get(url, headers=headers, params=querystring).json()
-    print(response)
-   # response  = response['results'][0]
-  #  response = formatData(response)
-    print(json.dumps(response, indent=3))
+   # print(response)
+   # print(json.dumps(response, indent=3))
     return response
 
 
-#rint(inputData())
+#print(inputData())
 
-# default argument to attach to project for ownership
+# default argument for ownership
 defaultArgs = {
     'owner': 'luckyMonkey',
     'start_date': datetime(2024, 8, 3, 7, 00),
     'email': ['name@email.com']
 }
 
+# connect to kafka 
 def kafka_producer():
     import json
     from kafka import KafkaProducer
-    data = inputData()
+    import time
+    import logging
 
+
+    currentTme=time.time()
     kafka_producer = KafkaProducer(bootstrap_servers=['broker'
                                                       ':29092'], max_block_ms=5000)
-    kafka_producer.send('housingData', json.dumps(data).encode('utf-8'))
+    while True:
+        if time.time() > currentTme + 60:  # 1 minute
+            break
+        try:
+            data = formatData(inputData())
+            kafka_producer.send('housingData', json.dumps(data).encode('utf-8'))
+        except Exception as e:
+            logging.error(f'ERROR!: {e}')
+            continue
 
-#kafka_producer()
-
+# define DAG tasks
 with DAG('zllowHousesStream_dag',
          default_args=defaultArgs,
          schedule_interval='@daily',
@@ -82,5 +90,8 @@ with DAG('zllowHousesStream_dag',
         task_id='extract_data_from_RapidAPI',
     python_callable = kafka_producer
     )
+
+
+
 
 
