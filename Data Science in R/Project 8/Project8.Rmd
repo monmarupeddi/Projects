@@ -1,0 +1,136 @@
+---
+title: "Project8"
+author: "Lakshmi Mounica Marupeddi"
+date: "2024-07-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rpart)
+library(vip)
+library(tidyverse)
+library(caret)
+library(e1071)
+
+```
+
+
+```{r}
+house_test = read_csv("hotel_cancellations_test.csv")
+house_train = read_csv("hotel_cancellations_train.csv", col_types = cols(.default = col_character()))
+house_test = house_test %>% mutate(is_cancelled = as.factor(is_cancelled))
+house_train = house_train %>% mutate(is_cancelled = as.factor(is_cancelled))
+```
+
+
+# Q-1
+missing values?
+```{r}
+sum(is.na(house_train))
+```
+
+# Q-2
+How many reservations in the training set have been cancelled?
+```{r}
+house_train %>% filter(is_cancelled=="Cancelled") %>% count()
+```
+
+# Q-3
+In the training set, among the reservations which are Cancelled, what is the count of the Non Refund values in the deposit_type variable?
+```{r}
+house_train %>% filter(is_cancelled=="Cancelled" & deposit_type=="Non Refund") %>% count()
+```
+
+# Q-4
+Build a classification model using the rpart() function in the rpart library. Build the tree on the training set. The outcome variable is "is_cancelled". Use default settings, meaning use default parameters: m1 = rpart(is_cancelled ~ ., data=df_tr). Use all the remaining columns as input data. Save this model as m1. Plot the decision tree. Which variable is used as the first split?
+```{r}
+library(rattle)
+m1 = rpart(is_cancelled ~ ., data=house_train)
+fancyRpartPlot(m1)
+#answer: deposit_type 
+
+```
+# Q-5 
+Using m1 make predictions on the training set. What is the training accuracy expressed in percentage? (Hint: set type to "class" in the predict() function)
+```{r}
+predict1 = predict(m1, newdata = house_train, type='class')
+sum(house_train$is_cancelled == predict1) / dim(house_train)[1]
+```
+
+
+# Q-6, Q-7, Q-8
+6. Using m1, make predictions on the testing set. Then create the confusion matrix. Assume the positive class to be 'Cancelled'. Call this confusion matrix cm1. What is the testing f1 score?  
+
+7. Q-7 Based on cm1 what is the sensitivity of model m1?
+
+8. What is the number of true positives
+```{r}
+predict2 = predict(m1, newdata = house_test, type='class')
+cm1 = caret::confusionMatrix(house_test$is_cancelled, predict2, mode = "everything", positive = "Cancelled")
+cm1
+
+# q-6: answer: F1 : 0.7052 
+# q-7: answer: Sensitivity: 0.6022 
+# q-8: answer: true Positives: 7989
+```
+
+# Q-9 
+variables in the top 3 in terms of importance?
+```{r}
+vip(m1)
+```
+
+# Q-10, Q-11 
+Build a naive bayes model using the training set. The outcome variable is "is_cancelled". Create the naive bayes model with default setttings and do not appy laplace correction. Use all the remaining columns as input data. Save this into m2. What is the prior probability of a reservation being Cancelled?
+```{r}
+m2 <- naiveBayes(is_cancelled ~ ., data = house_train)
+# Calculate prior probability of 'Cancelled'
+m2
+#10 ans: prior probabilities: Cancelled : 0.3704187
+#11 ans: p(lead_time >=100 | is_cancelled=Cancelled) = 0.55318668
+```
+
+
+
+# Q-12 
+Using m2 make predictions on the testing set. What is the testing accuracy expressed in percentage? Use the predict() function, and set type='class'.
+```{r}
+# predicted classes
+pred1=predict(m2, newdata=house_test, type='class')
+
+cm2 = caret::confusionMatrix(reference=house_test$is_cancelled, data=pred1, mode = "everything", positive = "Cancelled")
+cm2$overall[["Accuracy"]]
+# Ans: Accuracy: 0.7687 
+```
+
+# Q-13, Q-14
+```{r}
+cm2
+#13 Ans: False Positives: 1920
+#14 Ans: Specificity : 0.9149  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

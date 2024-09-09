@@ -1,0 +1,136 @@
+---
+title: "Project7"
+author: "Lakshmi Mounica Marupeddi"
+date: "2024-07-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(dplyr)
+library(tidyverse)
+df = read.csv("student-mat.csv", sep = ";")
+head(df)
+
+```
+
+# Question 1
+```{r}
+y = c(2, 2, 8)
+x = c(0, 1, 1)
+x1 = 3* x + 2
+
+basePred = mean(y)
+basePred
+SSE_mean = (y - mean(y)) ^ 2 %>% sum()
+SSE_mean
+SSE_fit = ((y - x1)) ^ 2 %>% sum()
+SSE_fit
+rSquared = (SSE_mean-SSE_fit) / SSE_mean
+rSquared
+```
+
+# Question 2
+Possible values of Rsquared: 0-1
+
+# Question 3, 4
+Read in the dataset by using the following code. df = read.csv('student-mat.csv', sep=';')  How many observations are there in the dataset?
+```{r}
+dim(df)
+```
+
+
+# Question 5
+Create linear regression model using all the remaining variables as predictors except for G1 and G2. You can use the following code: lm1 <- lm(G3 ~ . -G1 -G2, data=df) What is the adjusted R² of the model?
+```{r}
+lm1 = lm(G3 ~  . -G1 -G2, data=df)
+summary(lm1)
+```
+
+
+# Question 6
+Which of the following variables are significant according to lm1? Assume 1 star and more to be significant. (*, **, *** are significant)
+1. Sex; 2. Go out with Friends; 3. Failures
+
+
+# Question 7
+Coefficient of indepedent var freetime? : 0.30242
+
+# Question 8
+```{r}
+lm2 = lm(G3~ sex + failures + goout, data=df)
+summary(lm2)
+```
+
+# Question 9
+The adjusted R² of the model can never be greater than Multiple R².
+ANS: TRUE
+
+# Question 10
+Create a scatter plot of G2 vs G1. What can you say about this plot?
+```{r}
+df %>% ggplot(aes(x=G2,y=G1)) + geom_point() + geom_smooth(method = 'lm', se=FALSE)
+cor(df$G1, df$G2)
+```
+
+
+# Question 11
+Create a scatter plot of G3 vs G1. What can you say about this plot?
+```{r}
+df %>% ggplot(aes(x=G3,y=G1)) + geom_point() + geom_smooth(method = 'lm', se=FALSE)
+cor(df$G3, df$G1)
+```
+
+
+# Question 12
+Create a 3rd model that uses only G1 as input. What is the model adjusted R²? lm3 = lm(G3~ G1, data=df)
+```{r}
+lm3 = lm(G3~ G1, data=df)
+summary(lm3)
+```
+
+
+# Question 13
+Create a boxplot of G3 vs failures. Do you think adding the failures to the regression model 3 will increase adjusted R²? Which of the following options are correct?
+```{r}
+df %>% ggplot(aes(group=failures, y=G3)) + geom_boxplot()
+
+```
+
+
+# Question 14
+Take the 3rd model. Add failures as a predictor. So you will have G1 and failures as predictors. This will be your lm4. What is the new adjusted R²?
+```{r}
+lm4 = lm(G3~ G1 + failures, data=df)
+summary(lm4)
+```
+
+
+# Question 15
+In lm4 what is the coefficient of failures?
+Ans: -0.53646 
+
+# Question 16
+In lm4 if the student got 10 in G1, and has 2 failures, what is the predicted G3 score going to be?
+```{r}
+coefs = lm4$coefficients
+#coefs
+G3 = coefs[1] + coefs[2] * 10 + coefs[3] * 2 
+G3
+```
+
+
+# Question 17
+From lm4 we can deduct that all else held constant, increasing G1 score by 1 point will mean an increase of G3 by 1.0636 points. True or False?
+Ans: True (co-ef of G1 is 1.0636)
+
+
+# Question 18
+From lm4 we can deduct that all else held constant, increasing failures score by 1 point will mean an increase of G3 by 1.0636 points. True or False?
+Ans: False (co-ef of G1 is not 1.0636)
+
