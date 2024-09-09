@@ -1,0 +1,134 @@
+---
+title: "Project 3"
+author: "Lakshmi Mounica Marupeddi"
+date: "2024-07-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Projecr 3
+
+### Import Libraries 
+```{r}
+#install.packages("nycflights13")
+library(nycflights13)
+library(dplyr)
+
+```
+
+### Question 1
+What is the number of rows in the "flights" set?
+```{r}
+nrow(flights)
+```
+
+### Question 2
+What is the number of character variables in the "flights" set? (Just check the dataset as-is, do not make any changes)
+```{r}
+str(flights)
+```
+### Question 3
+How many unique destination airports are there in flights data?
+```{r}
+
+flights %>% 
+  distinct(dest) %>%
+  summarize(uniqueDestinations = n())
+```
+### Question 4
+ How many unique origin airports are there in the flights data?
+```{r}
+#
+flights %>% 
+  distinct(origin) %>% 
+  summarize(uniqueOriginAirports = n())
+
+
+```
+### Question 5
+Which airports are among the origin airports?
+```{r}
+# 
+flights %>% 
+  distinct(origin)
+```
+
+### Question 6
+From the LGA airport, how many unique destination airports are being flown to?
+```{r}
+# 
+flights %>% 
+  filter(origin == "LGA") %>% 
+  distinct(dest) %>% 
+  summarize(UniqueDestsFromLGA = n())
+```
+### Question 7
+How many flights have originated from "LGA" airport?
+```{r}
+# 
+flights %>% filter(origin == "LGA") %>% count()
+
+```
+### Question 8
+How many unique carriers have flown from "JFK"?
+```{r}
+# 
+flights %>% 
+  filter(origin == "JFK") %>% 
+  distinct(carrier) %>% 
+  summarize(uniqueCarrriersFromJFK = n())
+```
+### Question 9
+How many trips did the carrier "AA" make in March?
+```{r}
+# 
+flights %>% 
+  filter(carrier == "AA" & month == 3) %>% 
+  summarize(MarchTripsByAA = n())
+```
+### Question 10
+Find the carrier that has flown the most in May 2013.
+```{r}
+# 
+flights %>% 
+  filter(year == 2013 & month == 5) %>%
+  group_by(carrier) %>% summarize(MaxTripsCarriers = n()) %>% 
+  filter(MaxTripsCarriers == max(MaxTripsCarriers))
+```
+### Question 11
+What is the carrier "UA"s second most popular destination in May 2013?
+```{r}
+# 
+temp = flights %>% filter(year == 2013 & month == 5 & carrier == "UA") %>% group_by(dest) %>% summarize(totalFlights = n()) %>% arrange(-totalFlights)
+temp[2,]
+```
+### Question 12
+Now check the "airports" data. This data contains information on the airports. Which variables are part of the airports dataset?
+```{r}
+# 
+glimpse(airports)
+```
+### Question 13
+What is the name of the airport coded as "1H2"? Hint: Check the "faa" column in airports data.
+```{r}
+# 
+airports %>% 
+  filter(faa == "1H2") %>% 
+  select(name)
+```
+### Question 14
+Which month has the smallest mean total delay in the fl_new data?
+```{r}
+# Create a new column in the flights set called "total_delay". Select only the month, carrier, origin, dest, distance, arr_delay columns. Save this to a new dataset called fl_new.
+fl_new = flights %>% mutate(total_delay = dep_delay+arr_delay) %>% select(month, carrier, origin, dest, distance,total_delay,  arr_delay) 
+
+# smallest mean
+fl_new = flights %>% 
+            group_by(month) %>% 
+            summarize(smallestMean = mean(dep_delay+arr_delay,  na.rm = TRUE)) %>% 
+            arrange(smallestMean) 
+fl_new[1, ]
+```
+

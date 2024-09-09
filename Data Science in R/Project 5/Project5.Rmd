@@ -1,0 +1,135 @@
+---
+title: "Project 5"
+author: "Lakshmi Mounica Marupeddi"
+date: "2024-07-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+```
+
+```{r}
+df = read_csv("/Users/lakshmimounicamarupeddi/Desktop/DSC 441/Project_5/athlete_events.csv")
+```
+
+
+```{r}
+df1 = df %>% distinct()
+```
+### Question 1
+1. Read in the athlete_events.csv file. Get rid of the duplicated rows. How many rows and columns are there?
+```{r}
+glimpse(df1)
+
+```
+### Question 2
+2. This dataset contains both summer and winter olympics.   
+    a) How many rows are there in the summer and how many are there in the winter olympics?   
+    b) Create a bar plot showing the number of entries in the summer and winter olympics. 
+```{r}
+tempa = df1 %>% group_by(Season) %>% summarize(n = n()) 
+tempa
+tempa %>% ggplot(aes(x=Season, y=n)) + geom_col()  + ggtitle("Entries in Summer and Winter Olympics")
+```
+### Question 3
+Count the number of unique athletes in the winter and summer olympics separately. (That is, within each season you will count each athlete only once.)  
+    a) How many unique athletes are there in the summer olympics?   
+    b) Create a bar chart for winter and summer olympics showing the number of unique athletes. 
+```{r}
+tempb = df1 %>% group_by(Season, Name) %>% count()
+tempb = tempb %>% group_by(Season) %>% summarize(n = n()) 
+tempb
+tempb %>% ggplot(aes(x=Season, y=n)) + geom_col()  + ggtitle("Number of unique athletes in Summer and Winter Olympics")
+
+```
+### Question 4 
+Count the number of unique athletes from each country in the winter olympics.   
+    a) How many unique athletes are there from USA (NOC column) in the winter olympics?   
+    b) Create a bar plot showing the number of unique athletes in the winter olympics. Only include the top 10 countries.  
+```{r}
+tempc = df1 %>% filter(Season=="Winter") %>% group_by(NOC, Name, Season) %>% summarize(n = n()) 
+tempc = tempc %>% group_by(NOC) %>% summarize(n1=n()) %>% arrange(-n1) %>% head(10)
+tempc
+tempc %>% ggplot(aes(x=NOC, y=n1)) + geom_col()  + ggtitle("")
+
+```
+### Question 5
+We will create histograms of two countries.    
+    a) What is the average weight of Swedish and US athletes after accounting for each year and season? (meaning: you should take the unique athletes in each year and season)
+    b) Create a histogram of the weights of Swedish athletes (NOC = SWE).   
+    c) Create a histogram of the weights of American athletes (NOC = USA).   
+```{r}
+tempd = df1 %>% filter(NOC %in% c("SWE", "USA")) %>% distinct(Year, Season, Name, .keep_all = TRUE) 
+# Calculate average weight by year and season
+tempd %>% group_by(NOC) %>% summarize(mean(Weight, na.rm = TRUE))
+# histograms
+tempd %>% ggplot(aes(x = Weight)) + geom_histogram(fill = "grey", colour = "grey") +
+  facet_grid(NOC ~ .)
+```
+### Question 6
+We would like to check whether basketball players are taller than other athletes. We will focus on USA.
+
+Compare the basketball, tennis, and wrestling players' (Sport column) average and median heights from USA. Which sports athletes are tallest on average? 
+
+Create box plots of heights of athletes from USA playing basketball, tennis, and wrestling. 
+```{r}
+tempe = df1 %>% filter(NOC=="USA")
+sports = tempe %>% filter(Sport %in% c("Basketball", "Tennis", "Wrestling") )  
+
+# Which sports athletes are tallest on average?
+#Ans: Basketball athletes are tallest on average at 192.6070	
+avgBB = sports %>% group_by(Sport) %>% summarize(mean = mean(Height, na.rm = TRUE), median = median(Height, na.rm = TRUE))
+avgBB 
+
+# boxplots
+sports %>% ggplot(aes(x=Sport, y = Height)) + geom_boxplot() + ggtitle("Box plots of heights of athletes")
+
+```
+### Question 7
+We would like to check whether US volleyball players' average height has changed over the years.   
+
+Create box plots of height throughout the years. Is there any trend?    
+Hint: Convert year to factor type. factor(Year)  
+```{r}
+tempf = df %>% filter(NOC=="USA" & Sport == "Volleyball")
+
+# box plots
+tempf %>% ggplot(aes(x=as.factor(Year), y = Height )) + geom_boxplot() + ggtitle("Box plots of height throughout the years")
+```
+### Question 8 
+Create a time plot showing the number of unique athletes from USA over the years. Check for Summer olympics only. Is there an increasing trend over the years? Do you realize the impact of the world wars? Do not convert "Year" to categorical type.  
+
+Hint: We are looking for unique athletes in each year, not the unique athletes in the whole dataset. (The same athlete can participate over several years.)
+```{r}
+
+temph = df1 %>% filter(Season=="Summer"& NOC=="USA") %>% group_by(Year, Name)  %>% summarize(n=n())
+temph = temph %>% group_by(Year) %>% summarize(n=n())
+# timeplot
+temph %>% ggplot(aes(x=Year, y=n)) + geom_line(size = 1)  + ggtitle("Number of unique athletes from USA over the years")
+  # Ans: Over the years it can be observed that the number of athletes from USA kept increasing from 1890 to 2010. During the periods of world wars 1914-1918 and 1939-1945 there was a downward trend in the number of unique athletes participating from USA. However during the second world war the plunge was not as drastic as compared to the first world war.
+
+```
+### Question 9
+How many gold medals were earned by the Netherlands (NOC = "NED") and the USA throughout the years in the summer olympics? Create a time series plot for each country. Is there any pattern?
+```{r}
+tempi = df1 %>% filter((NOC=="NED" | NOC == "USA") & Season=="Summer" & Medal == "Gold") %>% group_by(NOC, Year) %>% summarize(total = n())
+tempi
+tempi %>% ggplot(aes(x=Year, y= total,colour=NOC)) + geom_line(size = 1) + facet_grid(NOC ~ .)
+# ans: The number of gold medals won by USA have always been higher than in Netherlands. While the trend for USA seemed to moved upwards over the years despite fluctuations in between, the trend for netherlands remained nearly same.
+```
+### Question 10
+Check all the sports in which the US got Gold medals in the summer olympics. Which sport stands out as the one with largest number of gold medals? Create a horizontal bar chart plot.
+
+```{r}
+tempj = df1 %>% filter(( NOC == "USA") & Season=="Summer" & Medal == "Gold") %>% group_by(Sport) %>% summarize(total = n()) %>% arrange(-total)
+tempj
+tempj %>% ggplot(aes(x=total, y=Sport)) + geom_col()
+# swimming stands out as the one with largest number of gold medals.
+```
+
